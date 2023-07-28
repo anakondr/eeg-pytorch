@@ -123,11 +123,11 @@ def load_pooled(data, subjectIndex, class_name,
     pos, neg = [], []
 
     for ii in subjectIndex:
-        try:  # get numpy data from the mne object
+#         try:  # get numpy data from the mne object
             pos.append(data[ii][class_name[0]].get_data())
             neg.append(data[ii][class_name[1]].get_data())
-        except Exception:
-            pass
+#         except Exception:
+#             pass
 
     # prepare the pooled data and concatenate the data from all subjects
     s1pos, s1neg = pos[-1], neg[-1]
@@ -270,8 +270,8 @@ def crop_data(fs, crop_length, xdata, ylabel, xpercent):
 
     """
     xoverlap = crop_length*xpercent/100
-    desired_length = np.int(fs*crop_length)
-    overlap = np.int(fs*xoverlap)
+    desired_length = int(fs*crop_length)
+    overlap = int(fs*xoverlap)
 
     number_splits = xdata.shape[-1]//desired_length
     tstart, tstop = 0, desired_length
@@ -345,8 +345,11 @@ def train_model(model, dset_loaders, dset_sizes, criterion, optimizer, dev,
     best_model, best_acc = model, 0.0
     train_losses, val_losses, train_accs = [], [], []
     val_accs, train_labels, val_labels = [], [], []
+    
+    print('num_epoch: ' + num_epochs)
 
     for epoch in range(num_epochs):
+        print('Epoch {}/{}'.format(epoch+1, num_epochs))
         if verbose > 1:
             print('Epoch {}/{}'.format(epoch+1, num_epochs))
         ypred_labels, ytrue_labels = [], []
