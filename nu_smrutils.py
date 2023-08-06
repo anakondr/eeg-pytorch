@@ -294,11 +294,11 @@ def crop_data(fs, crop_length, xdata, ylabel, xpercent):
     return Xi, Yi
 
 ##############################################
-dev = torch.device("cpu")
+# dev = torch.device("cpu")
 
-if torch.cuda.is_available():
-    dev = torch.device("cuda")
-    torch.set_default_tensor_type('torch.cuda.FloatTensor')
+# if torch.cuda.is_available():
+#     dev = torch.device("cuda")
+#     torch.set_default_tensor_type('torch.cuda.FloatTensor')
 
 #############################################################
 def best_epoch_labels(train_labels, best_epoch):
@@ -346,12 +346,12 @@ def train_model(model, dset_loaders, dset_sizes, criterion, optimizer, dev,
     train_losses, val_losses, train_accs = [], [], []
     val_accs, train_labels, val_labels = [], [], []
     
-    print('num_epoch: ' + num_epochs)
+    print('num_epoch: ', num_epochs)
 
     for epoch in range(num_epochs):
-        print('Epoch {}/{}'.format(epoch+1, num_epochs))
+        print('Epoch {}//{}'.format(epoch+1, num_epochs), end='\r')
         if verbose > 1:
-            print('Epoch {}/{}'.format(epoch+1, num_epochs))
+            print('Epochhh {}///{}'.format(epoch+1, num_epochs), end='\r')
         ypred_labels, ytrue_labels = [], []
 
         # [Train or Validation phase]
@@ -374,7 +374,7 @@ def train_model(model, dset_loaders, dset_sizes, criterion, optimizer, dev,
                     hidden = model.init_hidden(len(inputs.to(dev)))
                     preds = model(inputs.to(dev), hidden)
                 else:
-                    preds = model(inputs.to(dev))
+                    preds = model(inputs.to(dev, dtype=torch.float))
 
                 labels = labels.type(torch.LongTensor)
                 loss = criterion(preds, labels.to(dev))
