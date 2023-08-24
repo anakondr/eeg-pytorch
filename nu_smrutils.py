@@ -269,19 +269,29 @@ def crop_data(fs, crop_length, xdata, ylabel, xpercent):
         xpercent    : amount of overlap in percentage  
 
     """
+#     print(f'xxdata: {xdata.shape}')
+#     print(f'yylabel: {ylabel.shape}')
+#     print(f'crop length: {crop_length}')
     xoverlap = crop_length*xpercent/100
+#     print(f'xoverlap: {xoverlap}')
     desired_length = int(fs*crop_length)
+#     print(f'desired length: {desired_length}')
     overlap = int(fs*xoverlap)
-
+#     print(f'overlap: {overlap}')
+    
     number_splits = xdata.shape[-1]//desired_length
+#     print(f'number_splits: {number_splits}')
     tstart, tstop = 0, desired_length
-
+    
     t = 3 - crop_length
+    print(f'{t=}')
+    print(list(np.arange(number_splits + t)))
     for ii in np.arange(number_splits + t):
         if ii == 0:
             tstart = tstart
             tstop = tstart + desired_length + overlap
             Xi, Yi = xdata[:, :, tstart:tstop], ylabel
+#             print(f'first slice: {tstart=}, {tstop=}, {Xi.shape=}, {Yi.shape=}')
         else:
             try:
                 tstart = tstart + desired_length
@@ -289,6 +299,7 @@ def crop_data(fs, crop_length, xdata, ylabel, xpercent):
 
                 Xi = torch.cat([Xi, xdata[:, :, tstart:tstop]])
                 Yi = torch.cat([Yi, ylabel])
+#                 print(f'next slice: {tstart=}, {tstop=}, {Xi.shape=}, {Yi.shape=}')
             except:
                 pass
     return Xi, Yi
@@ -377,7 +388,8 @@ def train_model(model, dset_loaders, dset_sizes, criterion, optimizer, dev,
                     preds = model(inputs.to(dev, dtype=torch.float))
 
                 labels = labels.type(torch.LongTensor)
-                loss = criterion(preds, labels.to(dev))
+                l = labels.to(dev)
+                loss = criterion(preds, l)
 
                 # Backpropagate & weight update
                 if phase == 'train':
@@ -439,6 +451,7 @@ def train_model(model, dset_loaders, dset_sizes, criterion, optimizer, dev,
 ####################################################################
 
 
+# 2 levels of convolution.
 class CNN2D(torch.nn.Module):
     def __init__(self, input_size, kernel_size, conv_channels,
                  dense_size, dropout):
